@@ -27,3 +27,17 @@ full__deepseek-deepseek-v4-flash:
   m02: "wrong filter: added a delivered-only filter the question did not ask for"
   m06: "wrong filter: added a delivered-only filter the question did not ask for"
   m14: "wrong filter: added a delivered-only filter the question did not ask for"
+
+names_only__gpt-5.4-mini:
+  h01: "wrong definition: summed payments (includes freight and undelivered orders) instead of item prices"
+  h03: "wrong filter: included orders that were never delivered"
+  h05: "wrong filter: included orders that were never delivered"
+  h06: "wrong column: filtered on the Portuguese category name, where health_beauty doesn't exist, so the total was empty"
+  h08: "wrong filter: included orders that were never delivered"
+  h10: "wrong key: counted customer rows (a new customer_id for every order), not distinct people"
+  h12: "wrong definition: added freight to revenue and kept undelivered orders"
+  h13: "query error: used a table alias it never defined; this setup has no second try"
+  u09: "answered the unanswerable: called item prices the cost of goods sold, but the data has no costs"
+
+notes_examples__gpt-5.4-mini:
+  m02: "wrong filter: added a delivered-only filter the question did not ask for (copied from the revenue example)"
