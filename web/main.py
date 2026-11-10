@@ -11,6 +11,7 @@ Run locally, from the project folder:  .venv/bin/uvicorn web.main:app --reload -
 """
 import json
 import logging
+import os
 import re
 from functools import lru_cache
 from pathlib import Path
@@ -45,6 +46,8 @@ templates = Jinja2Templates(directory=HERE / "templates")
 templates.env.filters["pct"] = lambda x, digits=0: f"{x * 100:.{digits}f}%"
 templates.env.filters["model_name"] = scores.model_name
 # Changes whenever a CSS or JS file does, so browsers fetch the new one after a deploy.
+# The public address, for link previews: Open Graph needs absolute URLs.
+templates.env.globals["site_url"] = os.environ.get("SITE_URL", "https://plainsight.ramiyer.tech").rstrip("/")
 templates.env.globals["asset_version"] = str(max(int(p.stat().st_mtime) for p in (HERE / "static").iterdir()))
 
 limiter = Limiter()  # one per process, shared by every visitor

@@ -19,7 +19,7 @@ Ask a business question about 100,000 real orders from a Brazilian online market
 - **It refuses instead of guessing.** Questions the data can't answer (profit margins, costs, customer names) come back as "can't be answered from this data", not as a confident wrong number. With the notes, all 10 such test questions are refused.
 - **Every answer shows its receipt.** The SQL is always on screen, with a copy button. Results are drawn as one big number, or a bar chart and the rows.
 - **Measured in public.** The [Scorecard](https://plainsight.ramiyer.tech/scorecard) shows every run and every failure, with the generated and reference SQL side by side and the reason it failed. Every result file is committed in [results/](results/).
-- **Shipped like a team.** Small PRs with CI on each one (103 offline tests with a fake model), a protected `main`, and automatic deploys to its own Ubuntu server behind nginx with HTTPS. Per-visitor and daily question limits keep the bill at about $0.0015 a question.
+- **Shipped like a team.** Small PRs with CI on each one (104 offline tests with a fake model), a protected `main`, and automatic deploys to its own Ubuntu server behind nginx with HTTPS. Per-visitor and daily question limits keep the bill at about $0.0015 a question.
 
 **Stack:** Python 3.12 · FastAPI · Jinja2 + vanilla JS · DuckDB · sqlglot · OpenAI `gpt-5.4-mini` · pytest · ruff · GitHub Actions · nginx + systemd on an Ubuntu VPS
 
@@ -151,7 +151,7 @@ What this shows:
 | [`limits.py`](limits.py) | Questions per visitor per hour, and per day for the whole site |
 | [`benchmark.yaml`](benchmark.yaml), [`evaluate.py`](evaluate.py) | The 60 test questions with reference SQL, and the runner that scores a setup |
 | [`results/`](results/), [`failure_labels.yaml`](failure_labels.yaml) | Every question, generated query and outcome for each run, and the reason for each failure |
-| [`tests/`](tests/) | 103 offline tests with a fake model: SQL safety, scoring, every reference query, limits, the website |
+| [`tests/`](tests/) | 104 offline tests with a fake model: SQL safety, scoring, every reference query, limits, the website |
 | [`deploy/`](deploy/) | The systemd unit, nginx site, deploy scripts and the server runbook |
 | [`.github/workflows/`](.github/workflows/) | CI on every PR, and the deploy after CI passes on `main` |
 | [`build_db.py`](build_db.py) | Loads the Kaggle CSVs into `olist.duckdb` |

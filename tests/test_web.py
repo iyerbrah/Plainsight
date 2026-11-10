@@ -1,5 +1,6 @@
 """The website: pages render, and /api/ask turns each kind of answer into JSON, with a fake model."""
 import math
+import re
 
 import pandas as pd
 import pytest
@@ -33,6 +34,18 @@ def test_pages_render(client):
     scorecard = client.get("/scorecard")
     assert scorecard.status_code == 200
     assert "Table and column names only" in scorecard.text
+
+
+def test_pages_have_link_preview_tags(client):
+    for path, title in [("/", "Plainsight: ask a database in plain English"), ("/scorecard", "Scorecard · Plainsight")]:
+        page = client.get(path).text
+        tags = dict(re.findall(r'<meta (?:property|name)="((?:og|twitter):[a-z:_]+)" content="([^"]*)"', page))
+        assert tags["og:title"] == title
+        assert tags["og:url"] == f"https://plainsight.ramiyer.tech{path}"
+        assert tags["og:image"] == "https://plainsight.ramiyer.tech/static/og.png"
+        assert tags["og:description"] and tags["twitter:card"] == "summary_large_image"
+    image = client.get("/static/og.png")
+    assert image.status_code == 200 and image.headers["content-type"] == "image/png"
 
 
 def test_scorecard_leads_with_the_model_the_site_uses(client):
