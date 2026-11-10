@@ -3,8 +3,8 @@ import streamlit as st
 
 from charts import bar_chart
 from engine import DEFAULT_MODEL, answer
+from limits import Limiter
 
-MAX_QUESTIONS = 20  # per browser session, to protect the API key on a public URL
 EXAMPLES = [
     "Which 5 categories have the highest revenue?",
     "How many customers have placed more than one order?",
@@ -17,6 +17,18 @@ EXAMPLES = [
 @st.cache_data(show_spinner=False)
 def cached_answer(question):
     return answer(question)
+
+
+@st.cache_resource
+def limiter():
+    """One limiter shared by every visitor's session."""
+    return Limiter()
+
+
+def visitor():
+    """The visitor's address. nginx overwrites X-Real-IP with the real one, so it can't be faked."""
+    address = st.context.headers.get("X-Real-IP") or st.context.ip_address
+    return address if isinstance(address, str) and address else "unknown"
 
 
 def show_result(result):
@@ -64,10 +76,10 @@ def show_sidebar():
                  "database of about 100,000 orders from a Brazilian marketplace (2016 to 2018).")
         st.write("The **Scorecard** page shows how often the answers are right.")
         st.caption(f"Model: {DEFAULT_MODEL}")
-        st.caption(f"Questions left this session: {MAX_QUESTIONS - st.session_state.get('used', 0)}")
+        st.caption(f"Questions you can ask this hour: {limiter().left(visitor())}")
 
 
-st.title("Text-to-SQL analytics assistant")
+st.title("Plainsight")
 st.write("Ask a business question in plain English. You get the answer and the SQL that produced it.")
 
 picked = st.pills("Try one", EXAMPLES, label_visibility="collapsed")
@@ -78,12 +90,15 @@ if picked and picked != st.session_state.get("last_pick"):
 question = st.text_input("Your question", key="question", placeholder="Which 5 states have the most customers?")
 
 if question:
+    # Count each new question once; Streamlit reruns this script on every click.
     if question != st.session_state.get("counted"):
-        if st.session_state.get("used", 0) >= MAX_QUESTIONS:
-            st.error(f"This session has reached its limit of {MAX_QUESTIONS} questions.")
+        hit = limiter().take(visitor())
+        if hit:
+            st.error("You've asked a lot of questions this hour. Please try again later." if hit == "hour"
+                     else "The site has answered its daily limit of questions. Please come back tomorrow.",
+                     icon=":material/hourglass:")
             show_sidebar()
             st.stop()
-        st.session_state["used"] = st.session_state.get("used", 0) + 1
         st.session_state["counted"] = question
 
     show_sidebar()

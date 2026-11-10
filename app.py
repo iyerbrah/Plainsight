@@ -3,10 +3,10 @@ import os
 
 import streamlit as st
 
-st.set_page_config(page_title="Text-to-SQL Analytics Assistant", page_icon=":material/database:")
+st.set_page_config(page_title="Plainsight", page_icon=":material/database:")
 
 try:
-    os.environ.setdefault("OPENROUTER_API_KEY", st.secrets["OPENROUTER_API_KEY"])
+    os.environ.setdefault("OPENAI_API_KEY", st.secrets["OPENAI_API_KEY"])
 except Exception:
     pass  # no secrets file: fall back to the environment variable
 

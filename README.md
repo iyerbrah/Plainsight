@@ -1,15 +1,18 @@
-# Text-to-SQL Analytics Assistant
+# Plainsight
 
 Ask a business question in plain English and get the answer from a real database, along
 with the SQL that produced it. Then see how often those answers are actually right.
 
 **Try it:** https://ask-the-olist-data-5bcmydxcckwd6pjb5cybm7.streamlit.app/
 
-**Built with:** Python, SQL (DuckDB), Streamlit, Altair, sqlglot, an LLM through the OpenRouter API
+**Built with:** Python, SQL (DuckDB), Streamlit, Altair, sqlglot, the OpenAI API (gpt-5.4-mini)
 
 ![The Scorecard page: accuracy for each setup on the 60 test questions](docs/scorecard.png)
 
 ## The finding
+
+> These results were measured on DeepSeek V4 Pro before the app moved to OpenAI's gpt-5.4-mini.
+> A rerun on gpt-5.4-mini, three runs per setup with ten harder questions, is in progress.
 
 A language model given only the table and column names answered **83%** of 60 test
 questions correctly. Given a page of written notes explaining what the data means, it
@@ -109,6 +112,10 @@ the model behaving:
 - The database connection is read-only.
 - Queries cannot read files or web addresses.
 - Results are capped at 1,000 rows and 15 seconds.
+- Each visitor can ask 20 questions an hour, and the whole site 300 a day, so the model bill
+  has a ceiling.
+
+The tests in `tests/` check each of these on every pull request.
 
 ## Cost
 
@@ -119,7 +126,7 @@ All five benchmark runs together cost about $0.09 in model usage.
 1. With Python 3.11 or newer: `pip install -r requirements.txt`
 2. Download the Olist dataset from Kaggle and unzip the CSVs into `data/`.
 3. `python build_db.py`
-4. Create `.streamlit/secrets.toml` containing one line: `OPENROUTER_API_KEY = "your-key"`.
+4. Create `.streamlit/secrets.toml` containing one line: `OPENAI_API_KEY = "sk-..."` (or set the `OPENAI_API_KEY` environment variable).
 5. `streamlit run app.py`
 
 To rerun the benchmark: `python evaluate.py --setup all`
@@ -134,6 +141,8 @@ To run the tests (offline, no API key needed): `pip install -r requirements-dev.
 | `views/ask.py`, `views/scorecard.py` | The two pages of the app |
 | `charts.py` | The bar chart both pages use |
 | `engine.py` | Builds the prompt, calls the model, checks and runs the SQL |
+| `limits.py` | Questions per visitor per hour, and per day for the whole site |
+| `tests/` | Offline tests: SQL safety, scoring, every reference query, limits, both pages |
 | `schema.md` | The written notes about the data that are sent to the model |
 | `examples.yaml` | The six worked examples |
 | `benchmark.yaml` | The 60 test questions and reference SQL |

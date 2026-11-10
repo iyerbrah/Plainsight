@@ -11,8 +11,10 @@ from openai import OpenAI
 from sqlglot import exp
 
 DB_PATH = "olist.duckdb"
-# Any model id from openrouter.ai/models works here.
-DEFAULT_MODEL = os.environ.get("ASKDATA_MODEL", "deepseek/deepseek-v4-pro")
+# Any OpenAI chat model id works here.
+DEFAULT_MODEL = os.environ.get("ASKDATA_MODEL", "gpt-5.4-mini")
+# How long the model thinks before answering: none, low, medium or high.
+REASONING_EFFORT = os.environ.get("ASKDATA_REASONING", "low")
 CANNOT_ANSWER = "CANNOT_ANSWER"
 MAX_ROWS = 1000
 QUERY_TIMEOUT_S = 15
@@ -44,15 +46,15 @@ class Answer:
 
 def api_key():
     """The environment variable if set, else the local Streamlit secrets file."""
-    if "OPENROUTER_API_KEY" in os.environ:
-        return os.environ["OPENROUTER_API_KEY"]
+    if "OPENAI_API_KEY" in os.environ:
+        return os.environ["OPENAI_API_KEY"]
     import tomllib
     with open(".streamlit/secrets.toml", "rb") as f:
-        return tomllib.load(f)["OPENROUTER_API_KEY"]
+        return tomllib.load(f)["OPENAI_API_KEY"]
 
 
 def make_client():
-    return OpenAI(base_url="https://openrouter.ai/api/v1", api_key=api_key())
+    return OpenAI(api_key=api_key())
 
 
 def connect():
@@ -90,8 +92,8 @@ def generate_sql(client, system, question, model, error=None):
         content += f"\n\nYour previous query failed with this error:\n{error}\nReturn a corrected query."
     response = client.chat.completions.create(
         model=model,
-        max_tokens=4000,
-        temperature=0,
+        max_completion_tokens=8000,
+        reasoning_effort=REASONING_EFFORT,
         messages=[{"role": "system", "content": system}, {"role": "user", "content": content}],
     )
     if response.usage:

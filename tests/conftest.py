@@ -17,9 +17,11 @@ class FakeClient:
     def __init__(self, *replies):
         self.replies = list(replies)
         self.prompts = []
+        self.calls = []
         self.chat = SimpleNamespace(completions=SimpleNamespace(create=self._create))
 
     def _create(self, **kwargs):
+        self.calls.append(kwargs)
         self.prompts.append(kwargs["messages"][-1]["content"])
         message = SimpleNamespace(content=self.replies.pop(0))
         return SimpleNamespace(choices=[SimpleNamespace(message=message)], usage=None)

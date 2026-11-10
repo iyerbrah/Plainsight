@@ -1,0 +1,7 @@
+# Settings for running the app (no secrets here; the key goes in secrets.toml or the environment).
+# On the server, the service passes --server.address 127.0.0.1 so only nginx can reach it.
+[server]
+headless = true
+
+[browser]
+gatherUsageStats = false
