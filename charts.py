@@ -15,5 +15,6 @@ def bar_chart(df, label, value, value_format=",.0f", show_values=False, domain=N
     bars = base.mark_bar(color=BAR_COLOR, cornerRadiusEnd=4, size=18)
     chart = bars
     if show_values:
-        chart = bars + base.mark_text(align="left", dx=6, color=LABEL_COLOR).encode(text=alt.Text(f"{value}:Q", format=value_format))
+        labels = base.mark_text(align="left", dx=6, color=LABEL_COLOR)
+        chart = bars + labels.encode(text=alt.Text(f"{value}:Q", format=value_format))
     return chart.properties(height=max(120, 34 * len(df) + 30)).configure_view(stroke=None)

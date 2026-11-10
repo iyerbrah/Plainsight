@@ -9,7 +9,6 @@ import yaml
 
 from charts import bar_chart
 
-
 SETUP_LABELS = {
     "names_only": "Table and column names only",
     "notes": "+ written notes about the data",

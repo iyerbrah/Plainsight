@@ -131,11 +131,13 @@ def answer(question, setup="full", model=DEFAULT_MODEL, client=None):
     try:
         check(sql)
         return Answer(sql, run(sql))
-    except Exception as first_error:
+    except Exception as e:
+        # Python clears `e` when the except block ends, so keep the message.
+        first_error = str(e)
         if not cfg["retry"]:
-            return Answer(sql, error=str(first_error))
+            return Answer(sql, error=first_error)
 
-    sql = generate_sql(client, system, question, model, error=str(first_error))
+    sql = generate_sql(client, system, question, model, error=first_error)
     if sql == CANNOT_ANSWER:
         return Answer(sql, retried=True)
     try:
