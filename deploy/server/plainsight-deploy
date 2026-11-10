@@ -17,12 +17,12 @@
 
 set -euo pipefail
 
-REPO_URL=https://github.com/iyerbrah/plainsight.git
+REPO_URL=https://github.com/iyerbrah/Plainsight.git
 STATE=/var/lib/plainsight-deploy
 SRC=$STATE/src
 APP=/opt/plainsight
 APP_HOME=/var/lib/plainsight
-HEALTH=http://127.0.0.1:8501/_stcore/health
+HEALTH=http://127.0.0.1:8100/healthz
 SHA=${1:-}
 
 if [[ ! $SHA =~ ^[0-9a-f]{40}$ ]]; then
@@ -56,9 +56,9 @@ git -C "$SRC" clean --quiet -ffdx
 
 echo "→ Copying it into $APP (secrets and the Python environment stay as they are)"
 rsync -a --delete \
-  --include=".env.example" --exclude=".env*" --exclude=".streamlit/secrets.toml" \
+  --include=".env.example" --exclude=".env*" \
   --exclude=".venv" --exclude=".git" --exclude=".claude" --exclude="data/" \
-  --exclude="__pycache__" \
+  --exclude="__pycache__" --exclude=".pytest_cache" --exclude=".ruff_cache" \
   "$SRC/" "$APP/"
 chown -R plainsight:plainsight "$APP"
 install -d -o plainsight -g plainsight -m 750 "$APP_HOME"

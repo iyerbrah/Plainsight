@@ -3,7 +3,7 @@
 # Logs: journalctl -u plainsight -f
 
 [Unit]
-Description=Plainsight text-to-SQL app (Streamlit)
+Description=Plainsight text-to-SQL site (FastAPI)
 After=network-online.target
 Wants=network-online.target
 
@@ -12,17 +12,19 @@ Type=simple
 User=plainsight
 Group=plainsight
 WorkingDirectory=/opt/plainsight
-# OPENAI_API_KEY, ASKDATA_MODEL and the rate limits. Only on the server; deploys never copy it.
+# OPENAI_API_KEY, LLM_MODEL, REASONING_EFFORT and the question limits. Only on the server;
+# deploys never copy or overwrite it.
 EnvironmentFile=/opt/plainsight/.env.production
-# Streamlit writes a few small files to HOME. ProtectHome hides /home, so HOME is the
+# A few Python libraries write small files to HOME. ProtectHome hides /home, so HOME is the
 # state folder systemd creates below (/var/lib/plainsight, owned by plainsight).
 Environment=HOME=/var/lib/plainsight
 StateDirectory=plainsight
 Environment=PYTHONUNBUFFERED=1
 Environment=PYTHONDONTWRITEBYTECODE=1
-Environment=STREAMLIT_BROWSER_GATHER_USAGE_STATS=false
-# Only reachable from this machine; nginx forwards the public traffic.
-ExecStart=/opt/plainsight/.venv/bin/streamlit run app.py --server.address 127.0.0.1 --server.port 8501 --server.headless true
+# Only reachable from this machine; nginx forwards the public traffic. Port 8100 because
+# QuoteRunner, on the same server, has 8000. One worker on purpose: the question limits are
+# counted in the process's memory.
+ExecStart=/opt/plainsight/.venv/bin/uvicorn web.main:app --host 127.0.0.1 --port 8100 --no-server-header
 Restart=always
 RestartSec=3
 

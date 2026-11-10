@@ -151,6 +151,12 @@ Restart the app after changing `.env`; it reads the file when it starts.
 - The database (`olist.duckdb`) is in the repository. To rebuild it from the source: download
   the Olist dataset from Kaggle, unzip the CSVs into `data/` and run `.venv/bin/python build_db.py`.
 
+## Deploy
+
+The live site runs on a small Ubuntu server behind nginx, as a systemd service. Merging into
+`main` deploys automatically once CI passes. [deploy/README.md](deploy/README.md) covers day-to-day
+use, rollback, setting the server up from scratch and troubleshooting.
+
 ## Files
 
 | File | Purpose |
@@ -169,4 +175,6 @@ Restart the app after changing `.env`; it reads the file when it starts.
 | `olist.duckdb` | The database itself, so the app runs without the download |
 | `.env.example` | Every setting, with what it does; copy it to `.env` for local use |
 | `.github/workflows/ci.yml` | Lint and the offline tests on every pull request |
+| `.github/workflows/deploy.yml` | Deploys `main` to the server after CI passes |
+| `deploy/` | The systemd service, the nginx site, the deploy scripts and the server guide |
 | `docs/` | Screenshots used in this README |
