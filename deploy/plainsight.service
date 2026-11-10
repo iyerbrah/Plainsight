@@ -12,7 +12,7 @@ Type=simple
 User=plainsight
 Group=plainsight
 WorkingDirectory=/opt/plainsight
-# OPENAI_API_KEY, LLM_MODEL, REASONING_EFFORT and the question limits. Only on the server;
+# LLM_PROVIDER, the provider keys and models, REASONING_EFFORT and the question limits. Only on the server;
 # deploys never copy or overwrite it.
 EnvironmentFile=/opt/plainsight/.env.production
 # A few Python libraries write small files to HOME. ProtectHome hides /home, so HOME is the

@@ -16,8 +16,16 @@ from sqlglot import exp
 load_dotenv()
 
 DB_PATH = "olist.duckdb"
-# Any OpenAI chat model id works here.
-DEFAULT_MODEL = os.environ.get("LLM_MODEL", "gpt-5.4-mini")
+# Who serves the model: "openai", or "openrouter" (same API, different address and key).
+LLM_PROVIDER = os.environ.get("LLM_PROVIDER", "openai").strip().lower()
+OPENROUTER_BASE_URL = "https://openrouter.ai/api/v1"
+# Each provider has its own model setting, so switching LLM_PROVIDER is the only change needed.
+MODEL_DEFAULTS = {
+    "openai": ("OPENAI_MODEL", "gpt-5.4-mini"),
+    "openrouter": ("OPENROUTER_MODEL", "nvidia/nemotron-3.5-super-vl:free"),
+}
+_model_var, _model_default = MODEL_DEFAULTS.get(LLM_PROVIDER, MODEL_DEFAULTS["openai"])
+DEFAULT_MODEL = os.environ.get(_model_var, "").strip() or _model_default
 # How long the model thinks before answering: none, low, medium or high.
 REASONING_EFFORT = os.environ.get("REASONING_EFFORT", "low")
 CANNOT_ANSWER = "CANNOT_ANSWER"
@@ -50,14 +58,19 @@ class Answer:
 
 
 def api_key():
-    """OPENAI_API_KEY from the environment (or the local .env file)."""
-    key = os.environ.get("OPENAI_API_KEY", "").strip()
+    """The provider's key (OPENAI_API_KEY or OPENROUTER_API_KEY) from the environment or the local .env file."""
+    if LLM_PROVIDER not in ("openai", "openrouter"):
+        raise RuntimeError(f"LLM_PROVIDER must be openai or openrouter, not {LLM_PROVIDER!r}.")
+    name = "OPENROUTER_API_KEY" if LLM_PROVIDER == "openrouter" else "OPENAI_API_KEY"
+    key = os.environ.get(name, "").strip()
     if not key:
-        raise RuntimeError("OPENAI_API_KEY isn't set. Paste your key into .env in the project folder (see .env.example).")
+        raise RuntimeError(f"{name} isn't set. Paste your key into .env in the project folder (see .env.example).")
     return key
 
 
 def make_client():
+    if LLM_PROVIDER == "openrouter":
+        return OpenAI(api_key=api_key(), base_url=OPENROUTER_BASE_URL)
     return OpenAI(api_key=api_key())
 
 
