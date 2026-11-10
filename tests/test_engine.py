@@ -1,5 +1,7 @@
 """answer(): what happens to the model's reply, with a fake model so nothing is sent anywhere."""
-from engine import CANNOT_ANSWER, answer
+import pytest
+
+from engine import CANNOT_ANSWER, answer, api_key
 
 
 def test_runs_the_query(fake_client):
@@ -38,3 +40,20 @@ def test_unsafe_sql_is_never_run(fake_client):
     result = answer("q", setup="notes", client=fake_client("DROP TABLE orders"))
     assert result.df is None
     assert "Only a single SELECT" in result.error
+
+
+def test_calls_openai_with_gpt5_settings(fake_client):
+    """GPT-5 models take max_completion_tokens and a reasoning effort, and reject a custom temperature."""
+    client = fake_client("SELECT 1")
+    answer("q", setup="notes", client=client)
+    call = client.calls[0]
+    assert call["model"] == "gpt-5.4-mini"
+    assert call["reasoning_effort"] == "low"
+    assert "max_completion_tokens" in call
+    assert "temperature" not in call and "max_tokens" not in call
+
+
+def test_missing_key_says_where_to_put_it(monkeypatch):
+    monkeypatch.setenv("OPENAI_API_KEY", "  ")
+    with pytest.raises(RuntimeError, match=r"\.env"):
+        api_key()

@@ -1,0 +1,612 @@
+{
+  "setup": "names_only",
+  "model": "gpt-5.4-mini",
+  "accuracy": 0.85,
+  "usage": {
+    "calls": 60,
+    "input_tokens": 20264,
+    "output_tokens": 5029
+  },
+  "items": [
+    {
+      "id": "e01",
+      "difficulty": "easy",
+      "question": "How many orders have the status delivered?",
+      "gold_sql": "SELECT count(*) FROM orders WHERE order_status = 'delivered'",
+      "pred_sql": "SELECT COUNT(*) AS delivered_orders\nFROM orders\nWHERE order_status = 'delivered'",
+      "correct": true,
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "e02",
+      "difficulty": "easy",
+      "question": "How many sellers are based in the state SP?",
+      "gold_sql": "SELECT count(*) FROM sellers WHERE seller_state = 'SP'",
+      "pred_sql": "SELECT COUNT(*) AS seller_count\nFROM sellers\nWHERE seller_state = 'SP'",
+      "correct": true,
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "e03",
+      "difficulty": "easy",
+      "question": "How many products are in the catalogue?",
+      "gold_sql": "SELECT count(*) FROM products",
+      "pred_sql": "SELECT COUNT(*) AS product_count\nFROM products",
+      "correct": true,
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "e04",
+      "difficulty": "easy",
+      "question": "How many orders were purchased in 2017?",
+      "gold_sql": "SELECT count(*) FROM orders WHERE year(order_purchase_timestamp) = 2017",
+      "pred_sql": "SELECT COUNT(*) AS orders_purchased_in_2017\nFROM orders\nWHERE order_purchase_timestamp >= TIMESTAMP '2017-01-01'\n  AND order_purchase_timestamp < TIMESTAMP '2018-01-01'",
+      "correct": true,
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "e05",
+      "difficulty": "easy",
+      "question": "What is the average review score across all reviews?",
+      "gold_sql": "SELECT avg(review_score) FROM order_reviews",
+      "pred_sql": "SELECT AVG(review_score) AS average_review_score\nFROM order_reviews",
+      "correct": true,
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "e06",
+      "difficulty": "easy",
+      "question": "How many orders were canceled?",
+      "gold_sql": "SELECT count(*) FROM orders WHERE order_status = 'canceled'",
+      "pred_sql": "SELECT COUNT(*) AS canceled_orders\nFROM orders\nWHERE order_status = 'canceled'",
+      "correct": true,
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "e07",
+      "difficulty": "easy",
+      "question": "How many payments were made by boleto?",
+      "gold_sql": "SELECT count(*) FROM order_payments WHERE payment_type = 'boleto'",
+      "pred_sql": "SELECT COUNT(*) AS boleto_payments\nFROM order_payments\nWHERE payment_type = 'boleto'",
+      "correct": true,
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "e08",
+      "difficulty": "easy",
+      "question": "What is the highest price of any single item sold?",
+      "gold_sql": "SELECT max(price) FROM order_items",
+      "pred_sql": "SELECT MAX(price) AS highest_price\nFROM order_items",
+      "correct": true,
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "e09",
+      "difficulty": "easy",
+      "question": "How many distinct cities do sellers operate from?",
+      "gold_sql": "SELECT count(DISTINCT seller_city) FROM sellers",
+      "pred_sql": "SELECT COUNT(DISTINCT seller_city) AS distinct_cities\nFROM sellers",
+      "correct": true,
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "e10",
+      "difficulty": "easy",
+      "question": "How many reviews gave a score of 1?",
+      "gold_sql": "SELECT count(*) FROM order_reviews WHERE review_score = 1",
+      "pred_sql": "SELECT COUNT(*) AS review_count\nFROM order_reviews\nWHERE review_score = 1",
+      "correct": true,
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "e11",
+      "difficulty": "easy",
+      "question": "What is the total freight value charged across all order items?",
+      "gold_sql": "SELECT sum(freight_value) FROM order_items",
+      "pred_sql": "SELECT SUM(freight_value) AS total_freight_value\nFROM order_items",
+      "correct": true,
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "e12",
+      "difficulty": "easy",
+      "question": "How many products have no category recorded?",
+      "gold_sql": "SELECT count(*) FROM products WHERE product_category_name IS NULL",
+      "pred_sql": "SELECT COUNT(*) AS products_with_no_category\nFROM products\nWHERE product_category_name IS NULL",
+      "correct": true,
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "e13",
+      "difficulty": "easy",
+      "question": "What is the largest number of installments used in a single payment?",
+      "gold_sql": "SELECT max(payment_installments) FROM order_payments",
+      "pred_sql": "SELECT MAX(payment_installments) AS largest_number_of_installments\nFROM order_payments",
+      "correct": true,
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "e14",
+      "difficulty": "easy",
+      "question": "How many orders were purchased in each year? Return the year and the number of orders.",
+      "gold_sql": "SELECT year(order_purchase_timestamp) AS yr, count(*) FROM orders GROUP BY yr",
+      "pred_sql": "SELECT\n  EXTRACT(YEAR FROM order_purchase_timestamp) AS year,\n  COUNT(*) AS number_of_orders\nFROM orders\nGROUP BY 1\nORDER BY 1",
+      "correct": true,
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "e15",
+      "difficulty": "easy",
+      "question": "How many payments were made with each payment type? Return the payment type and the number of payments.",
+      "gold_sql": "SELECT payment_type, count(*) FROM order_payments GROUP BY payment_type",
+      "pred_sql": "SELECT payment_type, COUNT(*) AS number_of_payments\nFROM order_payments\nGROUP BY payment_type",
+      "correct": true,
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "m01",
+      "difficulty": "medium",
+      "question": "Which 5 customer states placed the most orders? Return the state and the number of orders.",
+      "gold_sql": "SELECT c.customer_state, count(*) AS orders FROM orders o JOIN customers c ON o.customer_id = c.customer_id GROUP BY c.customer_state ORDER BY orders DESC LIMIT 5",
+      "pred_sql": "SELECT\n  c.customer_state AS state,\n  COUNT(*) AS number_of_orders\nFROM orders o\nJOIN customers c\n  ON o.customer_id = c.customer_id\nGROUP BY c.customer_state\nORDER BY number_of_orders DESC, state\nLIMIT 5",
+      "correct": true,
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "m02",
+      "difficulty": "medium",
+      "question": "Which category has the most items sold? Return the category and the number of items.",
+      "gold_sql": "SELECT t.product_category_name_english, count(*) AS items FROM order_items i JOIN products p ON i.product_id = p.product_id JOIN product_category_name_translation t ON p.product_category_name = t.product_category_name GROUP BY 1 ORDER BY items DESC LIMIT 1",
+      "pred_sql": "SELECT\n  COALESCE(t.product_category_name_english, p.product_category_name) AS category,\n  COUNT(*) AS items_sold\nFROM order_items oi\nJOIN products p\n  ON oi.product_id = p.product_id\nLEFT JOIN product_category_name_translation t\n  ON p.product_category_name = t.product_category_name\nGROUP BY 1\nORDER BY items_sold DESC\nLIMIT 1",
+      "correct": true,
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "m03",
+      "difficulty": "medium",
+      "question": "Which 3 customer states have the highest average review score? Return the state and the average score.",
+      "gold_sql": "SELECT c.customer_state, avg(r.review_score) AS avg_score FROM order_reviews r JOIN orders o ON r.order_id = o.order_id JOIN customers c ON o.customer_id = c.customer_id GROUP BY c.customer_state ORDER BY avg_score DESC LIMIT 3",
+      "pred_sql": "SELECT\n  c.customer_state AS state,\n  AVG(r.review_score) AS average_score\nFROM customers c\nJOIN orders o\n  ON c.customer_id = o.customer_id\nJOIN order_reviews r\n  ON o.order_id = r.order_id\nGROUP BY c.customer_state\nORDER BY average_score DESC, state\nLIMIT 3",
+      "correct": true,
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "m04",
+      "difficulty": "medium",
+      "question": "How many delivered orders reached the customer after the estimated delivery date?",
+      "gold_sql": "SELECT count(*) FROM orders WHERE order_status = 'delivered' AND order_delivered_customer_date > order_estimated_delivery_date",
+      "pred_sql": "SELECT COUNT(*) AS delivered_orders_after_estimated_date\nFROM orders\nWHERE order_status = 'delivered'\n  AND order_delivered_customer_date IS NOT NULL\n  AND order_estimated_delivery_date IS NOT NULL\n  AND order_delivered_customer_date > order_estimated_delivery_date",
+      "correct": true,
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "m05",
+      "difficulty": "medium",
+      "question": "How many orders were purchased in each month of 2018? Return the month number and the number of orders.",
+      "gold_sql": "SELECT month(order_purchase_timestamp) AS m, count(*) FROM orders WHERE year(order_purchase_timestamp) = 2018 GROUP BY m",
+      "pred_sql": "SELECT EXTRACT(MONTH FROM order_purchase_timestamp) AS month_number, COUNT(*) AS number_of_orders\nFROM orders\nWHERE order_purchase_timestamp >= TIMESTAMP '2018-01-01'\n  AND order_purchase_timestamp < TIMESTAMP '2019-01-01'\nGROUP BY 1\nORDER BY 1",
+      "correct": true,
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "m06",
+      "difficulty": "medium",
+      "question": "Which 5 sellers sold the most items? Return the seller id and the number of items.",
+      "gold_sql": "SELECT seller_id, count(*) AS items FROM order_items GROUP BY seller_id ORDER BY items DESC LIMIT 5",
+      "pred_sql": "SELECT seller_id, COUNT(*) AS number_of_items\nFROM order_items\nGROUP BY seller_id\nORDER BY number_of_items DESC, seller_id\nLIMIT 5",
+      "correct": true,
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "m07",
+      "difficulty": "medium",
+      "question": "Among orders that have at least one item, what is the average number of items per order?",
+      "gold_sql": "SELECT count(*) * 1.0 / count(DISTINCT order_id) FROM order_items",
+      "pred_sql": "SELECT AVG(item_count) AS average_items_per_order\nFROM (\n  SELECT order_id, COUNT(*) AS item_count\n  FROM order_items\n  GROUP BY order_id\n) t",
+      "correct": true,
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "m08",
+      "difficulty": "medium",
+      "question": "What is the total payment value for each payment type? Return the payment type and the total.",
+      "gold_sql": "SELECT payment_type, sum(payment_value) FROM order_payments GROUP BY payment_type",
+      "pred_sql": "SELECT payment_type, SUM(payment_value) AS total\nFROM order_payments\nGROUP BY payment_type\nORDER BY payment_type",
+      "correct": true,
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "m09",
+      "difficulty": "medium",
+      "question": "For delivered orders, what is the average time from purchase to delivery to the customer, in days, counting fractions of a day?",
+      "gold_sql": "SELECT avg(epoch(order_delivered_customer_date - order_purchase_timestamp)) / 86400 FROM orders WHERE order_status = 'delivered'",
+      "pred_sql": "SELECT AVG(EXTRACT(EPOCH FROM (order_delivered_customer_date - order_purchase_timestamp)) / 86400.0) AS avg_days_purchase_to_delivery\nFROM orders\nWHERE order_status = 'delivered'\n  AND order_delivered_customer_date IS NOT NULL\n  AND order_purchase_timestamp IS NOT NULL",
+      "correct": true,
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "m10",
+      "difficulty": "medium",
+      "question": "How many orders contain more than one item?",
+      "gold_sql": "SELECT count(*) FROM (SELECT order_id FROM order_items GROUP BY order_id HAVING count(*) > 1)",
+      "pred_sql": "SELECT COUNT(*) AS orders_with_more_than_one_item\nFROM (\n  SELECT order_id\n  FROM order_items\n  GROUP BY order_id\n  HAVING COUNT(*) > 1\n) t",
+      "correct": true,
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "m11",
+      "difficulty": "medium",
+      "question": "Which 3 cities have the most sellers? Return the city and the number of sellers.",
+      "gold_sql": "SELECT seller_city, count(*) AS sellers FROM sellers GROUP BY seller_city ORDER BY sellers DESC LIMIT 3",
+      "pred_sql": "SELECT seller_city AS city, COUNT(*) AS number_of_sellers\nFROM sellers\nGROUP BY seller_city\nORDER BY number_of_sellers DESC, city\nLIMIT 3",
+      "correct": true,
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "m12",
+      "difficulty": "medium",
+      "question": "Which 5 categories have the highest average item price? Return the category and the average price.",
+      "gold_sql": "SELECT t.product_category_name_english, avg(i.price) AS avg_price FROM order_items i JOIN products p ON i.product_id = p.product_id JOIN product_category_name_translation t ON p.product_category_name = t.product_category_name GROUP BY 1 ORDER BY avg_price DESC LIMIT 5",
+      "pred_sql": "SELECT\n  COALESCE(t.product_category_name_english, p.product_category_name) AS category,\n  AVG(oi.price) AS average_price\nFROM order_items oi\nJOIN products p\n  ON oi.product_id = p.product_id\nLEFT JOIN product_category_name_translation t\n  ON p.product_category_name = t.product_category_name\nGROUP BY 1\nORDER BY average_price DESC\nLIMIT 5",
+      "correct": true,
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "m13",
+      "difficulty": "medium",
+      "question": "How many delivered orders were placed by customers in the state MG?",
+      "gold_sql": "SELECT count(*) FROM orders o JOIN customers c ON o.customer_id = c.customer_id WHERE o.order_status = 'delivered' AND c.customer_state = 'MG'",
+      "pred_sql": "SELECT COUNT(*) AS delivered_orders_from_mg\nFROM orders o\nJOIN customers c ON o.customer_id = c.customer_id\nWHERE o.order_status = 'delivered'\n  AND c.customer_state = 'MG'",
+      "correct": true,
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "m14",
+      "difficulty": "medium",
+      "question": "How many distinct products have been sold at least once?",
+      "gold_sql": "SELECT count(DISTINCT product_id) FROM order_items",
+      "pred_sql": "SELECT COUNT(DISTINCT product_id) AS distinct_products_sold\nFROM order_items",
+      "correct": true,
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "m15",
+      "difficulty": "medium",
+      "question": "What percentage of reviews have a score of 5? Give a number between 0 and 100 rounded to 2 decimals.",
+      "gold_sql": "SELECT round(100.0 * count(*) FILTER (WHERE review_score = 5) / count(*), 2) FROM order_reviews",
+      "pred_sql": "SELECT ROUND(100.0 * SUM(CASE WHEN review_score = 5 THEN 1 ELSE 0 END) / COUNT(*), 2) AS percentage_of_reviews_with_score_5 FROM order_reviews",
+      "correct": true,
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "m16",
+      "difficulty": "medium",
+      "question": "On which day of the week are the most orders purchased? Return the English day name and the number of orders.",
+      "gold_sql": "SELECT dayname(order_purchase_timestamp) AS day, count(*) AS orders FROM orders GROUP BY day ORDER BY orders DESC LIMIT 1",
+      "pred_sql": "SELECT strftime(order_purchase_timestamp, '%A') AS day_name, COUNT(*) AS order_count\nFROM orders\nGROUP BY 1\nORDER BY order_count DESC\nLIMIT 1",
+      "correct": true,
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "m17",
+      "difficulty": "medium",
+      "question": "How many orders were paid using more than one payment type?",
+      "gold_sql": "SELECT count(*) FROM (SELECT order_id FROM order_payments GROUP BY order_id HAVING count(DISTINCT payment_type) > 1)",
+      "pred_sql": "SELECT COUNT(*) AS orders_paid_using_more_than_one_payment_type\nFROM (\n  SELECT order_id\n  FROM order_payments\n  GROUP BY order_id\n  HAVING COUNT(DISTINCT payment_type) > 1\n) t",
+      "correct": true,
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "m18",
+      "difficulty": "medium",
+      "question": "What is the average payment value of credit card payments with more than 6 installments?",
+      "gold_sql": "SELECT avg(payment_value) FROM order_payments WHERE payment_type = 'credit_card' AND payment_installments > 6",
+      "pred_sql": "SELECT AVG(payment_value) AS average_payment_value\nFROM order_payments\nWHERE payment_type = 'credit_card'\n  AND payment_installments > 6",
+      "correct": true,
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "m19",
+      "difficulty": "medium",
+      "question": "How many sellers have sold more than 100 items?",
+      "gold_sql": "SELECT count(*) FROM (SELECT seller_id FROM order_items GROUP BY seller_id HAVING count(*) > 100)",
+      "pred_sql": "SELECT COUNT(*) AS seller_count\nFROM (\n  SELECT seller_id\n  FROM order_items\n  GROUP BY seller_id\n  HAVING COUNT(*) > 100\n) t",
+      "correct": true,
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "m20",
+      "difficulty": "medium",
+      "question": "For each review score, how many reviews include a written comment message? Return the score and the count.",
+      "gold_sql": "SELECT review_score, count(*) FROM order_reviews WHERE review_comment_message IS NOT NULL GROUP BY review_score",
+      "pred_sql": "SELECT\n  review_score,\n  COUNT(*) AS review_count\nFROM order_reviews\nWHERE review_comment_message IS NOT NULL\nGROUP BY review_score\nORDER BY review_score",
+      "correct": true,
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "h01",
+      "difficulty": "hard",
+      "question": "What is the total revenue?",
+      "gold_sql": "SELECT sum(i.price) FROM order_items i JOIN orders o ON i.order_id = o.order_id WHERE o.order_status = 'delivered'",
+      "pred_sql": "SELECT SUM(payment_value) AS total_revenue\nFROM order_payments",
+      "correct": false,
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "h02",
+      "difficulty": "hard",
+      "question": "How many customers have placed more than one order?",
+      "gold_sql": "SELECT count(*) FROM (\n  SELECT c.customer_unique_id FROM orders o JOIN customers c ON o.customer_id = c.customer_id\n  GROUP BY c.customer_unique_id HAVING count(*) > 1)",
+      "pred_sql": "SELECT COUNT(*) AS customer_count\nFROM (\n  SELECT c.customer_unique_id\n  FROM customers c\n  JOIN orders o ON c.customer_id = o.customer_id\n  GROUP BY c.customer_unique_id\n  HAVING COUNT(*) > 1\n) t",
+      "correct": true,
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "h03",
+      "difficulty": "hard",
+      "question": "Which 5 categories have the highest revenue? Return the category and its revenue.",
+      "gold_sql": "SELECT t.product_category_name_english, sum(i.price) AS revenue FROM order_items i JOIN orders o ON i.order_id = o.order_id JOIN products p ON i.product_id = p.product_id JOIN product_category_name_translation t ON p.product_category_name = t.product_category_name WHERE o.order_status = 'delivered' GROUP BY 1 ORDER BY revenue DESC LIMIT 5",
+      "pred_sql": "SELECT\n  COALESCE(t.product_category_name_english, p.product_category_name) AS category,\n  SUM(oi.price) AS revenue\nFROM order_items oi\nJOIN products p\n  ON oi.product_id = p.product_id\nLEFT JOIN product_category_name_translation t\n  ON p.product_category_name = t.product_category_name\nGROUP BY 1\nORDER BY revenue DESC\nLIMIT 5",
+      "correct": false,
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "h04",
+      "difficulty": "hard",
+      "question": "What percentage of delivered orders were late? Give a number between 0 and 100 rounded to 2 decimals.",
+      "gold_sql": "SELECT round(100.0 * count(*) FILTER (WHERE order_delivered_customer_date > order_estimated_delivery_date) / count(*), 2) FROM orders WHERE order_status = 'delivered'",
+      "pred_sql": "SELECT ROUND(100.0 * SUM(CASE WHEN order_delivered_customer_date > order_estimated_delivery_date THEN 1 ELSE 0 END) / COUNT(*), 2) AS late_percentage\nFROM orders\nWHERE order_status = 'delivered' AND order_delivered_customer_date IS NOT NULL AND order_estimated_delivery_date IS NOT NULL",
+      "correct": true,
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "h05",
+      "difficulty": "hard",
+      "question": "Which month had the highest revenue? Return the month as YYYY-MM and the revenue.",
+      "gold_sql": "SELECT strftime(o.order_purchase_timestamp, '%Y-%m') AS month, sum(i.price) AS revenue FROM order_items i JOIN orders o ON i.order_id = o.order_id WHERE o.order_status = 'delivered' GROUP BY month ORDER BY revenue DESC LIMIT 1",
+      "pred_sql": "SELECT strftime('%Y-%m', o.order_purchase_timestamp) AS month, SUM(oi.price) AS revenue\nFROM orders o\nJOIN order_items oi ON o.order_id = oi.order_id\nGROUP BY 1\nORDER BY revenue DESC\nLIMIT 1",
+      "correct": false,
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "h06",
+      "difficulty": "hard",
+      "question": "What is the total payment value of orders that contain at least one item in the health_beauty category?",
+      "gold_sql": "SELECT sum(payment_value) FROM order_payments WHERE order_id IN (\n  SELECT i.order_id FROM order_items i\n  JOIN products p ON i.product_id = p.product_id\n  JOIN product_category_name_translation t ON p.product_category_name = t.product_category_name\n  WHERE t.product_category_name_english = 'health_beauty')",
+      "pred_sql": "SELECT SUM(op.payment_value) AS total_payment_value\nFROM order_payments op\nJOIN (\n    SELECT DISTINCT oi.order_id\n    FROM order_items oi\n    JOIN products p ON oi.product_id = p.product_id\n    WHERE p.product_category_name = 'health_beauty'\n) hb_orders\nON op.order_id = hb_orders.order_id",
+      "correct": false,
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "h07",
+      "difficulty": "hard",
+      "question": "Among delivered orders, what is the average total item price per order, excluding freight?",
+      "gold_sql": "SELECT avg(order_total) FROM (\n  SELECT i.order_id, sum(i.price) AS order_total\n  FROM order_items i JOIN orders o ON i.order_id = o.order_id\n  WHERE o.order_status = 'delivered' GROUP BY i.order_id)",
+      "pred_sql": "SELECT AVG(order_total_price) AS average_total_item_price_per_order_excluding_freight\nFROM (\n  SELECT o.order_id, SUM(oi.price) AS order_total_price\n  FROM orders o\n  JOIN order_items oi\n    ON o.order_id = oi.order_id\n  WHERE o.order_status = 'delivered'\n  GROUP BY o.order_id\n) t",
+      "correct": true,
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "h08",
+      "difficulty": "hard",
+      "question": "Which 3 sellers have the highest revenue? Return the seller id and the revenue.",
+      "gold_sql": "SELECT i.seller_id, sum(i.price) AS revenue FROM order_items i JOIN orders o ON i.order_id = o.order_id WHERE o.order_status = 'delivered' GROUP BY i.seller_id ORDER BY revenue DESC LIMIT 3",
+      "pred_sql": "SELECT\n  seller_id,\n  SUM(price) AS revenue\nFROM order_items\nGROUP BY seller_id\nORDER BY revenue DESC\nLIMIT 3",
+      "correct": false,
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "h09",
+      "difficulty": "hard",
+      "question": "What is the average review score of reviews for delivered orders that arrived late?",
+      "gold_sql": "SELECT avg(r.review_score) FROM order_reviews r JOIN orders o ON r.order_id = o.order_id WHERE o.order_status = 'delivered' AND o.order_delivered_customer_date > o.order_estimated_delivery_date",
+      "pred_sql": "SELECT AVG(r.review_score) AS average_review_score\nFROM orders o\nJOIN order_reviews r\n  ON o.order_id = r.order_id\nWHERE o.order_status = 'delivered'\n  AND o.order_delivered_customer_date IS NOT NULL\n  AND o.order_estimated_delivery_date IS NOT NULL\n  AND o.order_delivered_customer_date > o.order_estimated_delivery_date",
+      "correct": true,
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "h10",
+      "difficulty": "hard",
+      "question": "How many customers are in the state SP?",
+      "gold_sql": "SELECT count(DISTINCT customer_unique_id) FROM customers WHERE customer_state = 'SP'",
+      "pred_sql": "SELECT COUNT(*) AS customer_count\nFROM customers\nWHERE customer_state = 'SP'",
+      "correct": false,
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "h11",
+      "difficulty": "hard",
+      "question": "What percentage of customers have placed more than one order? Give a number between 0 and 100 rounded to 2 decimals.",
+      "gold_sql": "SELECT round(100.0 * count(*) FILTER (WHERE n > 1) / count(*), 2) FROM (\n  SELECT c.customer_unique_id, count(*) AS n\n  FROM orders o JOIN customers c ON o.customer_id = c.customer_id\n  GROUP BY c.customer_unique_id)",
+      "pred_sql": "SELECT ROUND(100.0 * COUNT(*) FILTER (WHERE order_count > 1) / COUNT(*), 2) AS percentage\nFROM (\n  SELECT c.customer_unique_id, COUNT(*) AS order_count\n  FROM customers c\n  JOIN orders o ON c.customer_id = o.customer_id\n  GROUP BY c.customer_unique_id\n) t",
+      "correct": true,
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "h12",
+      "difficulty": "hard",
+      "question": "For each year of purchase, which customer state had the highest revenue? Return the year, the state and the revenue.",
+      "gold_sql": "SELECT yr, customer_state, revenue FROM (\n  SELECT year(o.order_purchase_timestamp) AS yr, c.customer_state, sum(i.price) AS revenue,\n         row_number() OVER (PARTITION BY year(o.order_purchase_timestamp) ORDER BY sum(i.price) DESC) AS rn\n  FROM order_items i\n  JOIN orders o ON i.order_id = o.order_id\n  JOIN customers c ON o.customer_id = c.customer_id\n  WHERE o.order_status = 'delivered'\n  GROUP BY 1, 2)\nWHERE rn = 1",
+      "pred_sql": "SELECT purchase_year AS year, customer_state AS state, revenue\nFROM (\n    SELECT\n        EXTRACT(YEAR FROM o.order_purchase_timestamp) AS purchase_year,\n        c.customer_state,\n        SUM(oi.price + oi.freight_value) AS revenue,\n        ROW_NUMBER() OVER (\n            PARTITION BY EXTRACT(YEAR FROM o.order_purchase_timestamp)\n            ORDER BY SUM(oi.price + oi.freight_value) DESC, c.customer_state\n        ) AS rn\n    FROM orders o\n    JOIN customers c ON o.customer_id = c.customer_id\n    JOIN order_items oi ON o.order_id = oi.order_id\n    GROUP BY 1, 2\n) t\nWHERE rn = 1\nORDER BY year",
+      "correct": false,
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "h13",
+      "difficulty": "hard",
+      "question": "For how many orders does the total payment value differ from the total of item prices plus freight by more than 1? Only consider orders that have both items and payments.",
+      "gold_sql": "SELECT count(*) FROM\n  (SELECT order_id, sum(price + freight_value) AS item_total FROM order_items GROUP BY order_id) i\n  JOIN (SELECT order_id, sum(payment_value) AS paid FROM order_payments GROUP BY order_id) p\n  ON i.order_id = p.order_id\nWHERE abs(i.item_total - p.paid) > 1",
+      "pred_sql": "SELECT COUNT(*) AS order_count\nFROM (\n    SELECT\n        oi.order_id,\n        ABS(COALESCE(pi.total_payment_value, 0) - COALESCE(ii.total_item_value, 0)) AS diff\n    FROM (\n        SELECT order_id, SUM(price + freight_value) AS total_item_value\n        FROM order_items\n        GROUP BY order_id\n    ) ii\n    INNER JOIN (\n        SELECT order_id, SUM(payment_value) AS total_payment_value\n        FROM order_payments\n        GROUP BY order_id\n    ) pi\n    ON ii.order_id = pi.order_id\n) t\nWHERE diff > 1",
+      "correct": false,
+      "error": "Binder Error: Referenced table \"oi\" not found!\nCandidate tables: \"ii\", \"pi\"\n\nLINE 4:         oi.order_id,\n                ^^^^^^^^^^^",
+      "retried": false
+    },
+    {
+      "id": "h14",
+      "difficulty": "hard",
+      "question": "For delivered orders, what is the median time from purchase to delivery to the customer, in days, counting fractions of a day?",
+      "gold_sql": "SELECT median(epoch(order_delivered_customer_date - order_purchase_timestamp)) / 86400 FROM orders WHERE order_status = 'delivered'",
+      "pred_sql": "SELECT quantile_cont((epoch(order_delivered_customer_date) - epoch(order_purchase_timestamp)) / 86400.0, 0.5) AS median_days_to_delivery\nFROM orders\nWHERE order_status = 'delivered'\n  AND order_purchase_timestamp IS NOT NULL\n  AND order_delivered_customer_date IS NOT NULL",
+      "correct": true,
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "h15",
+      "difficulty": "hard",
+      "question": "How many customers made their first purchase in 2018?",
+      "gold_sql": "SELECT count(*) FROM (\n  SELECT c.customer_unique_id FROM orders o JOIN customers c ON o.customer_id = c.customer_id\n  GROUP BY c.customer_unique_id HAVING year(min(o.order_purchase_timestamp)) = 2018)",
+      "pred_sql": "SELECT COUNT(*) AS customer_count\nFROM (\n  SELECT c.customer_unique_id\n  FROM customers c\n  JOIN orders o ON c.customer_id = o.customer_id\n  GROUP BY c.customer_unique_id\n  HAVING MIN(EXTRACT(YEAR FROM o.order_purchase_timestamp)) = 2018\n) t",
+      "correct": true,
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "u01",
+      "difficulty": "unanswerable",
+      "question": "What is the profit margin for each product category?",
+      "gold_sql": "CANNOT_ANSWER",
+      "pred_sql": "CANNOT_ANSWER",
+      "correct": true,
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "u02",
+      "difficulty": "unanswerable",
+      "question": "Which marketing channel brought in the most customers?",
+      "gold_sql": "CANNOT_ANSWER",
+      "pred_sql": "CANNOT_ANSWER",
+      "correct": true,
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "u03",
+      "difficulty": "unanswerable",
+      "question": "What is the average age of customers?",
+      "gold_sql": "CANNOT_ANSWER",
+      "pred_sql": "CANNOT_ANSWER",
+      "correct": true,
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "u04",
+      "difficulty": "unanswerable",
+      "question": "How many orders were returned for a refund?",
+      "gold_sql": "CANNOT_ANSWER",
+      "pred_sql": "CANNOT_ANSWER",
+      "correct": true,
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "u05",
+      "difficulty": "unanswerable",
+      "question": "What is the name of the best-selling product?",
+      "gold_sql": "CANNOT_ANSWER",
+      "pred_sql": "CANNOT_ANSWER",
+      "correct": true,
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "u06",
+      "difficulty": "unanswerable",
+      "question": "What is the current stock level of each product?",
+      "gold_sql": "CANNOT_ANSWER",
+      "pred_sql": "CANNOT_ANSWER",
+      "correct": true,
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "u07",
+      "difficulty": "unanswerable",
+      "question": "How many website visits turned into an order?",
+      "gold_sql": "CANNOT_ANSWER",
+      "pred_sql": "CANNOT_ANSWER",
+      "correct": true,
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "u08",
+      "difficulty": "unanswerable",
+      "question": "What is the split of customers by gender?",
+      "gold_sql": "CANNOT_ANSWER",
+      "pred_sql": "CANNOT_ANSWER",
+      "correct": true,
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "u09",
+      "difficulty": "unanswerable",
+      "question": "What was the cost of goods sold in 2018?",
+      "gold_sql": "CANNOT_ANSWER",
+      "pred_sql": "SELECT SUM(oi.price) AS cost_of_goods_sold\nFROM order_items oi\nJOIN orders o ON oi.order_id = o.order_id\nWHERE o.order_purchase_timestamp >= TIMESTAMP '2018-01-01'\n  AND o.order_purchase_timestamp < TIMESTAMP '2019-01-01'",
+      "correct": false,
+      "error": null,
+      "retried": false
+    },
+    {
+      "id": "u10",
+      "difficulty": "unanswerable",
+      "question": "Which carrier company delivered the most orders?",
+      "gold_sql": "CANNOT_ANSWER",
+      "pred_sql": "CANNOT_ANSWER",
+      "correct": true,
+      "error": null,
+      "retried": false
+    }
+  ]
+}

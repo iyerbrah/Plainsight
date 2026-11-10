@@ -3,7 +3,7 @@
     python evaluate.py                          # full setup, default model
     python evaluate.py --setup names_only
     python evaluate.py --setup all              # the whole ablation ladder
-    python evaluate.py --model deepseek/deepseek-v4-flash
+    python evaluate.py --model gpt-5.4-nano      # any OpenAI chat model
 
 Every question is one API call (two if the retry fires).
 """

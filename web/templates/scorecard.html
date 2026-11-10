@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{% block title %}Scorecard · Plainsight{% endblock %}
+{% block body_class %}inner{% endblock %}
+
+{% block hero %}
+<div class="page-hero">
+  <h1>How often is it right?</h1>
+  <p class="lede">{{ headline.questions if headline else 60 }} test questions, each with a checked reference query.
+    A generated answer counts as right only if it returns the same result. Each run adds one thing to what the
+    model is given.</p>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="page">
+  {% if not runs %}
+    <p class="meta">No results yet. Run <code>python evaluate.py --setup all</code> first.</p>
+  {% else %}
+  <section>
+    {% if main_model == model %}
+    <p class="meta">Measured on <strong>{{ main_model | model_name }}</strong>, the model this site answers with,
+      one run per row.</p>
+    {% else %}
+    <p class="meta">Measured on <strong>{{ main_model | model_name }}</strong>, one run per row. This site answers
+      with {{ model }}, which hasn't been put through the benchmark yet.</p>
+    {% endif %}
+    {% if headline %}
+    <div class="cards">
+      <div class="card"><span class="big">{{ headline.before | pct }}</span>with table and column names only</div>
+      <div class="card good"><span class="big">{{ headline.after | pct }}</span>with written notes about the data
+        ({{ "%+d" | format(headline.gain_points) }} points)</div>
+      <div class="card"><span class="big">{{ headline.hard_before.right }} → {{ headline.hard_after.right }}</span>hard
+        questions right, of {{ headline.hard_after.total }}, once the notes are added</div>
+      <div class="card"><span class="big">{{ headline.refused }} of {{ headline.unanswerable }}</span>unanswerable
+        questions refused, with notes</div>
+    </div>
+    {% endif %}
+  </section>
+
+  <section>
+    <h2>Accuracy by what the model was given</h2>
+    <p class="section-lede">The notes do the work. Worked examples and a second try add nothing measurable on top:
+      a difference of one question is within run-to-run noise.</p>
+    <ol class="bars" aria-label="Accuracy per run">
+      {% for r in runs %}
+      <li>
+        <span class="bar-label">{{ r.label }}</span>
+        <span class="bar-track"><span class="bar-fill" style="width: {{ (r.accuracy * 100) | round(1) }}%"></span></span>
+        <span class="bar-value num">{{ r.accuracy | pct }}</span>
+      </li>
+      {% endfor %}
+    </ol>
+  </section>
+
+  {% if ladders %}
+  <section>
+    <h2>The same ladder on other models</h2>
+    <p class="section-lede">The ladder was first measured on DeepSeek, then again on {{ main_model | model_name }}.
+      The jump comes from the notes on both.</p>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>What the model was given</th>{% for m in ladders.models %}<th class="num">{{ m }}</th>{% endfor %}</tr></thead>
+        <tbody>
+          {% for row in ladders.rows %}
+          <tr>
+            <td>{{ row.label }}</td>
+            {% for v in row["values"] %}<td class="num">{{ v | pct if v is not none else "–" }}</td>{% endfor %}
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+  {% endif %}
+
+  <section>
+    <h2>Right answers by difficulty</h2>
+    <p class="section-lede">Hard questions depend on a business rule or a trap in the data. Unanswerable questions
+      should be refused.</p>
+    <div class="scroll">
+      <table>
+        <thead><tr><th>Run</th>{% for d in runs[0].by_difficulty %}<th class="num">{{ d.level | capitalize }}</th>{% endfor %}<th class="num">All</th></tr></thead>
+        <tbody>
+          {% for r in runs %}
+          <tr>
+            <td>{{ r.label }}</td>
+            {% for d in r.by_difficulty %}<td class="num">{{ d.right }} of {{ d.total }}</td>{% endfor %}
+            <td class="num"><strong>{{ r.accuracy | pct }}</strong></td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section id="failures">
+    <h2>What went wrong</h2>
+    <nav class="tabs" aria-label="Pick a run">
+      {% for r in runs %}
+        <a href="/scorecard?run={{ r.key }}#failures" {% if r.key == chosen.key %}aria-current="true"{% endif %}>
+          {{ r.label }} <span class="count">{{ r.failures | length }}</span></a>
+      {% endfor %}
+    </nav>
+    {% if not chosen.failures %}
+      <p class="meta">No failures in this run.</p>
+    {% endif %}
+    <div class="failures">
+      {% for item in chosen.failures %}
+      <details class="failure">
+        <summary><span class="q">{{ item.question }}</span><span class="tag {{ item.difficulty }}">{{ item.difficulty }}</span></summary>
+        <p class="why"><strong>Why it failed:</strong> {{ item.reason or "not labelled yet" }}</p>
+        <div class="two-sql">
+          <div><p class="sql-label">Generated</p><pre class="sql">{{ item.pred_sql }}</pre></div>
+          <div><p class="sql-label">Reference</p><pre class="sql">{{ item.gold_sql }}</pre></div>
+        </div>
+        {% if item.error %}<p class="muted small">Error: {{ item.error }}</p>{% endif %}
+      </details>
+      {% endfor %}
+    </div>
+  </section>
+  {% endif %}
+</div>
+{% endblock %}

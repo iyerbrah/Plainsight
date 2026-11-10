@@ -35,5 +35,5 @@ jobs:
       - name: Lint
         run: ruff check .
 
-      - name: Tests (safety checks, scoring, benchmark queries, both pages)
+      - name: Tests (safety checks, scoring, benchmark queries, the website)
         run: pytest -q
