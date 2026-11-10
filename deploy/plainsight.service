@@ -1,0 +1,43 @@
+# Runs Plainsight as a background service that starts on boot and restarts if it crashes.
+# deploy/deploy.sh installs this to /etc/systemd/system/plainsight.service; GitHub deploys don't touch it.
+# Logs: journalctl -u plainsight -f
+
+[Unit]
+Description=Plainsight text-to-SQL app (Streamlit)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=plainsight
+Group=plainsight
+WorkingDirectory=/opt/plainsight
+# OPENAI_API_KEY, ASKDATA_MODEL and the rate limits. Only on the server; deploys never copy it.
+EnvironmentFile=/opt/plainsight/.env.production
+# Streamlit writes a few small files to HOME. ProtectHome hides /home, so HOME is the
+# state folder systemd creates below (/var/lib/plainsight, owned by plainsight).
+Environment=HOME=/var/lib/plainsight
+StateDirectory=plainsight
+Environment=PYTHONUNBUFFERED=1
+Environment=PYTHONDONTWRITEBYTECODE=1
+Environment=STREAMLIT_BROWSER_GATHER_USAGE_STATS=false
+# Only reachable from this machine; nginx forwards the public traffic.
+ExecStart=/opt/plainsight/.venv/bin/streamlit run app.py --server.address 127.0.0.1 --server.port 8501 --server.headless true
+Restart=always
+RestartSec=3
+
+# Lock the process down: it can read the app (and the database, which it opens read-only)
+# and write only its own state folder.
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/lib/plainsight
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+RestrictSUIDSGID=true
+LockPersonality=true
+
+[Install]
+WantedBy=multi-user.target
