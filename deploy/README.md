@@ -119,7 +119,7 @@ Save with Ctrl+O, Enter, Ctrl+X, then:
 sudo systemctl restart plainsight
 ```
 
-The file holds `OPENAI_API_KEY`, `LLM_MODEL`, `REASONING_EFFORT`, `RATE_LIMIT_PER_HOUR` and `DAILY_QUESTION_CAP`. Values go without quote marks. [.env.example](../.env.example) explains each one.
+The file holds `LLM_PROVIDER`, `OPENAI_API_KEY`, `OPENAI_MODEL`, `OPENROUTER_API_KEY`, `OPENROUTER_MODEL`, `REASONING_EFFORT`, `RATE_LIMIT_PER_HOUR` and `DAILY_QUESTION_CAP`. Values go without quote marks. [.env.example](../.env.example) explains each one.
 
 ### Rotate the OpenAI key
 
@@ -199,14 +199,17 @@ sudo -u plainsight nano /opt/plainsight/.env.production
 ```
 
 ```
+LLM_PROVIDER=openrouter
 OPENAI_API_KEY=
-LLM_MODEL=gpt-5.4-mini
+OPENAI_MODEL=gpt-5.4-mini
+OPENROUTER_API_KEY=
+OPENROUTER_MODEL=nvidia/nemotron-3.5-super-vl:free
 REASONING_EFFORT=low
 RATE_LIMIT_PER_HOUR=20
 DAILY_QUESTION_CAP=300
 ```
 
-Paste the OpenAI key after `OPENAI_API_KEY=`, with no quote marks. Use a key from its own **Plainsight** project on platform.openai.com, not Jhola's or QuoteRunner's, so the sites' spend and limits stay apart. Then lock the file down:
+Paste the key for the provider in `LLM_PROVIDER` after its `=` sign (`OPENROUTER_API_KEY` or `OPENAI_API_KEY`), with no quote marks. Use Plainsight's own key, not Jhola's or QuoteRunner's, so the sites' spend and limits stay apart. Then lock the file down:
 
 ```bash
 sudo chmod 600 /opt/plainsight/.env.production

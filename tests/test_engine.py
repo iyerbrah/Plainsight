@@ -1,7 +1,8 @@
 """answer(): what happens to the model's reply, with a fake model so nothing is sent anywhere."""
 import pytest
 
-from engine import CANNOT_ANSWER, answer, api_key
+import engine
+from engine import CANNOT_ANSWER, answer, api_key, make_client
 
 
 def test_runs_the_query(fake_client):
@@ -51,6 +52,14 @@ def test_calls_openai_with_gpt5_settings(fake_client):
     assert call["reasoning_effort"] == "low"
     assert "max_completion_tokens" in call
     assert "temperature" not in call and "max_tokens" not in call
+
+
+def test_openrouter_uses_its_own_address_and_key(monkeypatch):
+    monkeypatch.setattr(engine, "LLM_PROVIDER", "openrouter")
+    monkeypatch.setenv("OPENROUTER_API_KEY", "or-test-key")
+    client = make_client()
+    assert str(client.base_url).startswith("https://openrouter.ai/api/v1")
+    assert client.api_key == "or-test-key"
 
 
 def test_missing_key_says_where_to_put_it(monkeypatch):
