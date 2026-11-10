@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% block title %}Scorecard · Plainsight{% endblock %}
+{% block description %}How often Plainsight's answers are right{% if headline %}: {{ headline.questions }} test questions with checked answers, {{ headline.before | pct }} right with table names alone and {{ headline.after | pct }} with written notes about the data{% endif %}.{% endblock %}
 {% block body_class %}inner{% endblock %}
 
 {% block hero %}
