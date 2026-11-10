@@ -12,6 +12,7 @@ import json
 import math
 import os
 from concurrent.futures import ThreadPoolExecutor
+from functools import partial
 from itertools import permutations
 
 import yaml
@@ -85,7 +86,7 @@ def main():
     for setup in SETUPS if args.setup == "all" else [args.setup]:
         before = dict(USAGE)
         with ThreadPoolExecutor(WORKERS) as pool:
-            items = list(pool.map(lambda item: score(item, setup, args.model, client), benchmark))
+            items = list(pool.map(partial(score, setup=setup, model=args.model, client=client), benchmark))
         usage = {key: USAGE[key] - before[key] for key in USAGE}
         accuracy = sum(i["correct"] for i in items) / len(items)
         failed = ", ".join(i["id"] for i in items if not i["correct"]) or "none"

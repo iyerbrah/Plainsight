@@ -1,0 +1,16 @@
+[project]
+name = "plainsight"
+version = "0.1.0"
+description = "Ask business questions in plain English, get checked SQL answers, and measure how often they are right."
+requires-python = ">=3.11"
+
+[tool.ruff]
+line-length = 130
+target-version = "py312"
+extend-exclude = [".venv"]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "B", "UP"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

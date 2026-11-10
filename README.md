@@ -116,13 +116,15 @@ All five benchmark runs together cost about $0.09 in model usage.
 
 ## Run it yourself
 
-1. `pip install -r requirements.txt`
+1. With Python 3.11 or newer: `pip install -r requirements.txt`
 2. Download the Olist dataset from Kaggle and unzip the CSVs into `data/`.
 3. `python build_db.py`
 4. Create `.streamlit/secrets.toml` containing one line: `OPENROUTER_API_KEY = "your-key"`.
 5. `streamlit run app.py`
 
 To rerun the benchmark: `python evaluate.py --setup all`
+
+To run the tests (offline, no API key needed): `pip install -r requirements-dev.txt`, then `pytest`
 
 ## Files
 

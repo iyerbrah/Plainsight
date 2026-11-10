@@ -1,6 +1,8 @@
-streamlit
-duckdb
-openai
-sqlglot
-pyyaml
-pandas
+# Pinned so the server installs exactly what CI tested. Python 3.11 or newer.
+altair==6.3.0
+duckdb==2.0.0
+openai==3.48.0
+pandas==3.1.1
+PyYAML==6.0.3
+sqlglot==30.30.0
+streamlit==1.67.0

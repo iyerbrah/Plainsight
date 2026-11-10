@@ -1,0 +1,40 @@
+"""answer(): what happens to the model's reply, with a fake model so nothing is sent anywhere."""
+from engine import CANNOT_ANSWER, answer
+
+
+def test_runs_the_query(fake_client):
+    result = answer("How many orders?", setup="notes", client=fake_client("SELECT count(*) AS n FROM orders"))
+    assert result.error is None
+    assert result.df["n"][0] == 99441
+
+
+def test_strips_code_fences_and_semicolon(fake_client):
+    result = answer("q", setup="notes", client=fake_client("```sql\nSELECT 1 AS x;\n```"))
+    assert result.sql == "SELECT 1 AS x"
+    assert result.df["x"][0] == 1
+
+
+def test_refusal(fake_client):
+    result = answer("What is the profit margin?", setup="notes", client=fake_client(CANNOT_ANSWER))
+    assert result.refused and result.df is None
+
+
+def test_no_retry_without_the_retry_setup(fake_client):
+    client = fake_client("SELECT no_such_column FROM orders")
+    result = answer("q", setup="notes", client=client)
+    assert result.error and not result.retried
+    assert len(client.prompts) == 1
+
+
+def test_retry_sends_the_error_back_and_uses_the_fix(fake_client):
+    client = fake_client("SELECT no_such_column FROM orders", "SELECT count(*) AS n FROM orders")
+    result = answer("How many orders?", setup="full", client=client)
+    assert result.retried and result.error is None
+    assert result.df["n"][0] == 99441
+    assert "no_such_column" in client.prompts[1]
+
+
+def test_unsafe_sql_is_never_run(fake_client):
+    result = answer("q", setup="notes", client=fake_client("DROP TABLE orders"))
+    assert result.df is None
+    assert "Only a single SELECT" in result.error
