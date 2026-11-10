@@ -1,13 +1,4 @@
 """The question limits: per visitor per rolling hour, and for the whole site per UTC day."""
-import functools
-
-import pandas as pd
-import streamlit as st
-from conftest import ROOT
-from streamlit.testing.v1 import AppTest
-
-import engine
-import limits
 from limits import Limiter
 
 
@@ -54,19 +45,3 @@ def test_refused_questions_are_not_counted():
         assert lim.take("a") == "hour"
     assert lim.today == 1
 
-
-def test_ask_page_turns_away_the_question_over_the_limit(monkeypatch):
-    def fake_answer(question, **_):
-        return engine.Answer("SELECT 42 AS answer", pd.DataFrame({"answer": [42]}))
-
-    monkeypatch.setattr(engine, "answer", fake_answer)
-    monkeypatch.setattr(limits, "Limiter", functools.partial(Limiter, per_hour=1, per_day=100))
-    st.cache_resource.clear()
-    st.cache_data.clear()
-
-    at = AppTest.from_file(str(ROOT / "views/ask.py"), default_timeout=30).run()
-    at.text_input[0].input("first question").run()
-    assert not at.error and at.metric[0].value == "42"
-    at.text_input[0].input("second question").run()
-    assert "this hour" in at.error[0].value
-    st.cache_resource.clear()

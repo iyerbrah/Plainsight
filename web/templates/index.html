@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}Plainsight: ask a database in plain English{% endblock %}
+{% block body_class %}home{% endblock %}
+
+{% block hero %}
+<div class="hero">
+  <div class="hero-copy">
+    <h1>What do you want to know?</h1>
+    <p class="lede">Ask a business question about 100,000 real orders. Plainsight writes the SQL, checks it can
+      only read, runs it and shows you the answer with the query behind it.</p>
+    <form id="ask" class="ask">
+      <label class="sr-only" for="question">Your question</label>
+      <input id="question" name="question" type="text" maxlength="{{ max_chars }}" autocomplete="off" required
+             placeholder="Which 5 states have the most customers?">
+      <button id="ask-button" type="submit">Ask</button>
+    </form>
+  </div>
+
+  <figure class="sheets" aria-label="Example: a question goes in, checked SQL and an answer come out">
+    <div class="sheet sheet-back" aria-hidden="true"></div>
+    <div class="sheet sheet-mid" aria-hidden="true"></div>
+    <div class="sheet sheet-front">
+      <p class="sheet-label">One question in</p>
+      <p class="sheet-quote">“What percentage of delivered orders were late?”</p>
+      <p class="sheet-label">SQL written</p>
+      <pre class="sheet-sql"><b>SELECT</b> avg(order_delivered_customer_date
+         &gt; order_estimated_delivery_date)
+<b>FROM</b> orders
+<b>WHERE</b> order_status = 'delivered'</pre>
+      <p class="sheet-label">Answer out</p>
+      <p class="sheet-answer"><mark>8.1%</mark> <small>of 96,470 orders</small></p>
+      <p class="stamp" aria-hidden="true">Read only</p>
+    </div>
+  </figure>
+</div>
+{% endblock %}
+
+{% block content %}
+<section class="below">
+  <div class="below-inner">
+    <div class="chips" id="examples" aria-label="Example questions">
+      {% for example in examples %}
+        <button type="button" class="chip" data-question="{{ example }}">{{ example }}</button>
+      {% endfor %}
+    </div>
+    <p class="left"><span id="left-count" aria-live="polite">{{ left }} question{{ "" if left == 1 else "s" }} left
+      this hour</span> · answered by {{ model }}</p>
+    {% if proof %}
+      <p class="proof">Tested on <a href="/scorecard">{{ proof.questions }} questions with checked answers</a>:
+        {{ proof.before | pct }} right with table names alone, {{ proof.after | pct }} once the model is given
+        written notes about the data{% if main_model != model %} (measured on {{ main_model | model_name }}){% endif %}.</p>
+    {% endif %}
+
+    <div id="results" class="results" aria-live="polite"></div>
+
+    <section class="how" id="how" aria-labelledby="how-title">
+      <h2 id="how-title">How an answer is made</h2>
+      <ol class="steps">
+        <li><h3>The model writes one query</h3>
+          <p>It gets your question, written notes about the tables and their traps, and six worked examples.
+            If the data can't answer the question, it says so instead of guessing.</p></li>
+        <li><h3>Code checks it</h3>
+          <p>The query is parsed, and anything other than a single <code>SELECT</code> is refused before it
+            reaches the database.</p></li>
+        <li><h3>It runs read-only</h3>
+          <p>The database is opened read-only, can't read files or web addresses, and stops after 15 seconds
+            or 1,000 rows.</p></li>
+        <li><h3>One second try</h3>
+          <p>If the query fails, the error goes back to the model once for a fix. You always see the SQL that
+            produced the answer.</p></li>
+      </ol>
+    </section>
+  </div>
+</section>
+{% endblock %}
+
+{% block scripts %}<script src="/static/app.js?v={{ asset_version }}"></script>{% endblock %}

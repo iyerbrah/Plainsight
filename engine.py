@@ -7,14 +7,19 @@ import duckdb
 import pandas as pd
 import sqlglot
 import yaml
+from dotenv import load_dotenv
 from openai import OpenAI
 from sqlglot import exp
 
+# Settings and the API key come from the environment. Locally they can sit in a .env file
+# in the project folder (see .env.example); real environment variables win over it.
+load_dotenv()
+
 DB_PATH = "olist.duckdb"
 # Any OpenAI chat model id works here.
-DEFAULT_MODEL = os.environ.get("ASKDATA_MODEL", "gpt-5.4-mini")
+DEFAULT_MODEL = os.environ.get("LLM_MODEL", "gpt-5.4-mini")
 # How long the model thinks before answering: none, low, medium or high.
-REASONING_EFFORT = os.environ.get("ASKDATA_REASONING", "low")
+REASONING_EFFORT = os.environ.get("REASONING_EFFORT", "low")
 CANNOT_ANSWER = "CANNOT_ANSWER"
 MAX_ROWS = 1000
 QUERY_TIMEOUT_S = 15
@@ -45,12 +50,11 @@ class Answer:
 
 
 def api_key():
-    """The environment variable if set, else the local Streamlit secrets file."""
-    if "OPENAI_API_KEY" in os.environ:
-        return os.environ["OPENAI_API_KEY"]
-    import tomllib
-    with open(".streamlit/secrets.toml", "rb") as f:
-        return tomllib.load(f)["OPENAI_API_KEY"]
+    """OPENAI_API_KEY from the environment (or the local .env file)."""
+    key = os.environ.get("OPENAI_API_KEY", "").strip()
+    if not key:
+        raise RuntimeError("OPENAI_API_KEY isn't set. Paste your key into .env in the project folder (see .env.example).")
+    return key
 
 
 def make_client():
@@ -64,10 +68,14 @@ def connect():
 
 
 def names_only_schema():
-    rows = connect().execute(
-        "SELECT table_name, string_agg(column_name || ' ' || data_type, ', ' ORDER BY ordinal_position) "
-        "FROM information_schema.columns GROUP BY table_name ORDER BY table_name"
-    ).fetchall()
+    con = connect()
+    try:
+        rows = con.execute(
+            "SELECT table_name, string_agg(column_name || ' ' || data_type, ', ' ORDER BY ordinal_position) "
+            "FROM information_schema.columns GROUP BY table_name ORDER BY table_name"
+        ).fetchall()
+    finally:
+        con.close()
     return "\n".join(f"{table}({cols})" for table, cols in rows)
 
 

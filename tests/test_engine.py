@@ -1,5 +1,7 @@
 """answer(): what happens to the model's reply, with a fake model so nothing is sent anywhere."""
-from engine import CANNOT_ANSWER, answer
+import pytest
+
+from engine import CANNOT_ANSWER, answer, api_key
 
 
 def test_runs_the_query(fake_client):
@@ -49,3 +51,9 @@ def test_calls_openai_with_gpt5_settings(fake_client):
     assert call["reasoning_effort"] == "low"
     assert "max_completion_tokens" in call
     assert "temperature" not in call and "max_tokens" not in call
+
+
+def test_missing_key_says_where_to_put_it(monkeypatch):
+    monkeypatch.setenv("OPENAI_API_KEY", "  ")
+    with pytest.raises(RuntimeError, match=r"\.env"):
+        api_key()

@@ -10,6 +10,10 @@ import threading
 import time
 from collections import defaultdict, deque
 
+from dotenv import load_dotenv
+
+load_dotenv()  # the limits can be set in .env locally, like engine.py's settings
+
 PER_HOUR = int(os.environ.get("RATE_LIMIT_PER_HOUR", "20"))
 PER_DAY = int(os.environ.get("DAILY_QUESTION_CAP", "300"))
 HOUR = 3600
